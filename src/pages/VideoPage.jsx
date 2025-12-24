@@ -1,28 +1,37 @@
 import { useState, useEffect, useMemo } from "react";
 import ChannelList from "../components/ChannelList";
+import ReactPlayer from "react-player";
+import { fetchChannels } from "../services/tvService";
 
 const ITEMS_PER_PAGE = 40;
 
 const VideoPage = ({ playlist }) => {
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
   const [channels, setChannels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [currentChannel, setCurrentChannel] = useState(null);
+  const [isTelegram, setIsTelegram] = useState(false);
 
-  // Fetch channels when playlist changes
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      setIsTelegram(true);
+      window.Telegram.WebApp.expand();
+    }
+  }, []);
+
   useEffect(() => {
     if (!playlist?.url) return;
 
     setLoading(true);
     setPage(1);
+    setCurrentChannel(null);
 
-    import("../services/tvService")
-      .then(({ fetchChannels }) => fetchChannels(playlist.url))
-      .then((data) => setChannels(data))
+    fetchChannels(playlist.url)
+      .then(setChannels)
       .finally(() => setLoading(false));
   }, [playlist]);
 
-  // Filtered channels based on search
   const filteredChannels = useMemo(() => {
     if (!search) return channels;
     return channels.filter((ch) =>
@@ -30,38 +39,27 @@ const VideoPage = ({ playlist }) => {
     );
   }, [channels, search]);
 
-  // Reset page on search
   useEffect(() => setPage(1), [search]);
 
   const totalPages = Math.ceil(filteredChannels.length / ITEMS_PER_PAGE);
-
   const paginatedChannels = filteredChannels.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
 
-  // Redirect user to the channel URL
+  // Handle channel click
   const handleSelectChannel = (channel) => {
-    window.location.href = channel.url; // opens in browser / native player
+    setCurrentChannel(channel);
+
+    // Telegram: cannot play inline fullscreen → open externally
+    if (isTelegram && channel?.url) {
+      window.location.href = channel.url;
+    }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center mt-16 text-white">
-        Loading channels...
-      </div>
-    );
-  }
-
-  if (filteredChannels.length === 0) {
-    return (
-      <div className="text-center mt-16 text-gray-400">No channels found</div>
-    );
-  }
 
   return (
     <div className="p-2">
-      {/* Search bar */}
+      {/* Search Bar */}
       <div className="p-4">
         <input
           type="text"
@@ -72,15 +70,29 @@ const VideoPage = ({ playlist }) => {
         />
       </div>
 
-      {/* Channel list */}
+      {/* Selected Channel Video */}
+      {currentChannel && !isTelegram && (
+        <div className="bg-gray-900 rounded p-4 mb-4 shadow-lg">
+          <h2 className="text-white text-lg mb-2">{currentChannel.name}</h2>
+          <ReactPlayer
+            url={currentChannel.url}
+            controls
+            width="100%"
+            height="200px"
+          />
+        </div>
+      )}
+
+      {/* Channel Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 p-4">
         {paginatedChannels.map((ch, idx) => (
           <div
             key={idx}
             onClick={() => handleSelectChannel(ch)}
-            className="bg-gray-800 hover:bg-gray-700 rounded-xl p-3
+            className={`bg-gray-800 hover:bg-gray-700 rounded-xl p-3
                        flex flex-col items-center cursor-pointer
-                       transition transform hover:scale-105"
+                       transition transform hover:scale-105
+                       ${currentChannel?.name === ch.name ? "border-2 border-blue-500" : ""}`}
           >
             {ch.logo ? (
               <img
@@ -122,6 +134,13 @@ const VideoPage = ({ playlist }) => {
           >
             Next
           </button>
+        </div>
+      )}
+
+      {/* Telegram warning */}
+      {isTelegram && currentChannel && (
+        <div className="text-sm text-gray-300 text-center mt-4">
+          ⚠️ Fullscreen is blocked inside Telegram. Video will open in your default browser.
         </div>
       )}
     </div>
