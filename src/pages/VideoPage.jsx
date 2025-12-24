@@ -1,27 +1,68 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import ChannelList from "../components/ChannelList";
 import ReactPlayer from "react-player";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
-const VideoPage = () => {
-  const { id } = useParams();
+const VideoPage = ({ playlist }) => {
+  const [search, setSearch] = useState("");
+  const [currentChannel, setCurrentChannel] = useState(null);
+  const playerRef = useRef(null);
+
+  // Expand Telegram WebApp
+  useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.expand();
+    }
+  }, []);
+
+  // Fullscreen handler
+  const handleFullScreen = () => {
+    if (!playerRef.current) return;
+    const elem = playerRef.current.getInternalPlayer();
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+  };
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
-      <Navbar />
+    <div className="p-2">
+      {/* Search bar */}
       <div className="p-4">
-        <h1 className="text-xl font-bold mb-4">Video {id}</h1>
-        <div className="w-full aspect-video">
+        <input
+          type="text"
+          placeholder="Search channels..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full p-2 rounded bg-gray-700 text-white"
+        />
+      </div>
+
+      {/* Channel list */}
+      <ChannelList
+        playlist={playlist}
+        search={search}
+        onSelectChannel={(ch) => setCurrentChannel(ch)}
+      />
+
+      {/* Video player */}
+      {currentChannel && (
+        <div className="p-4">
           <ReactPlayer
-            url={`https://www.example.com/video${id}.mp4`}
+            ref={playerRef}
+            url={currentChannel.url}
             controls
             width="100%"
-            height="100%"
+            height="200px"
           />
+          <button
+            onClick={handleFullScreen}
+            className="mt-2 p-2 bg-blue-500 text-white rounded w-full"
+          >
+            Fullscreen
+          </button>
         </div>
-      </div>
-      <Footer />
+      )}
     </div>
   );
 };
