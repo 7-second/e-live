@@ -8,6 +8,14 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+
+
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+},
+
   server: {
     host: true,
     port: 5173
