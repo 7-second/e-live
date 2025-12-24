@@ -55,18 +55,22 @@ const VideoPage = ({ playlist }) => {
             />
           </div>
 
-          {/* Telegram mobile workaround */}
-          <p className="text-gray-300 text-sm mt-2 mb-1">
-            Telegram blocks fullscreen in-app. Tap below to open in your phone's video player:
-          </p>
-          <a
-            href={currentChannel.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block text-center bg-blue-500 text-white rounded p-2"
-          >
-            Open in device video player
-          </a>
+          {/* Telegram detection */}
+          {window.Telegram?.WebApp ? (
+            <div className="mt-2 p-2 bg-gray-800 text-white rounded">
+              ⚠️ Fullscreen is blocked inside Telegram. Copy the link below and open it in your browser or device video player:
+              <div className="mt-1 break-words text-blue-400">{currentChannel.url}</div>
+            </div>
+          ) : (
+            <a
+              href={currentChannel.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 block text-center bg-blue-500 text-white rounded p-2"
+            >
+              Open in device video player
+            </a>
+          )}
         </div>
       )}
     </div>
