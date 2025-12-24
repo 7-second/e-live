@@ -6,6 +6,7 @@ const VideoPage = ({ playlist }) => {
   const [search, setSearch] = useState("");
   const [currentChannel, setCurrentChannel] = useState(null);
   const playerRef = useRef(null);
+  const playerContainerRef = useRef(null);
 
   // Expand Telegram WebApp
   useEffect(() => {
@@ -14,15 +15,10 @@ const VideoPage = ({ playlist }) => {
     }
   }, []);
 
-  // Auto fullscreen on channel select (desktop & supported mobile)
+  // Scroll player into view on channel select
   useEffect(() => {
-    if (!currentChannel || !playerRef.current) return;
-
-    const elem = playerRef.current.getInternalPlayer();
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen().catch(() => {});
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
+    if (currentChannel && playerContainerRef.current) {
+      playerContainerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [currentChannel]);
 
@@ -31,7 +27,7 @@ const VideoPage = ({ playlist }) => {
     if (!playerRef.current) return;
     const elem = playerRef.current.getInternalPlayer();
     if (elem.requestFullscreen) {
-      elem.requestFullscreen();
+      elem.requestFullscreen().catch(() => {});
     } else if (elem.webkitRequestFullscreen) {
       elem.webkitRequestFullscreen();
     }
@@ -59,8 +55,8 @@ const VideoPage = ({ playlist }) => {
 
       {/* Video player */}
       {currentChannel && (
-        <div className="p-4">
-          <div className="relative w-full h-60 sm:h-96 md:h-[500px] lg:h-[600px] bg-black rounded">
+        <div ref={playerContainerRef} className="p-4">
+          <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] bg-black rounded">
             <ReactPlayer
               ref={playerRef}
               url={currentChannel.url}
