@@ -1,55 +1,45 @@
-import { useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import ChannelList from "../components/ChannelList";
 import HLSPlayer from "../components/HLSPlayer";
 
-const ChannelPage = ({ playlist }) => {
-  const [activeChannel, setActiveChannel] = useState(null);
+const ChannelPage = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
 
-  // 👇 ref for video section
-  const videoRef = useRef(null);
+  if (!state) {
+    navigate("/");
+    return null;
+  }
 
-  const handleSelectChannel = (channel) => {
-    setActiveChannel(channel);
-
-    // 👇 scroll to video after state update
-    setTimeout(() => {
-      videoRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 100);
-  };
+  const { channel, playlist } = state;
+  const [activeChannel, setActiveChannel] = useState(channel);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      
-      {/* VIDEO SECTION */}
-      <div
-        ref={videoRef}
-        className="sticky top-0 z-40 bg-black p-3"
-      >
-        {activeChannel ? (
-          <>
-            <h2 className="mb-2 text-lg font-bold">
-              {activeChannel.name}
-            </h2>
+      {/* STICKY VIDEO */}
+      <div className="sticky top-0 z-40 bg-gray-900 pb-3">
+        <h2 className="text-xl font-bold mb-2 px-4">
+          {activeChannel.name}
+        </h2>
 
-            <div className="aspect-video w-full">
-              <HLSPlayer url={activeChannel.streamUrl} autoPlay />
-            </div>
-          </>
-        ) : (
-          <div className="text-center text-gray-400 py-10">
-            Select a channel to play
-          </div>
-        )}
+        <div className="w-full max-w-5xl mx-auto aspect-video rounded-lg overflow-hidden">
+          <HLSPlayer url={activeChannel.streamUrl} autoPlay />
+        </div>
       </div>
 
-      {/* CHANNEL LIST */}
-      <ChannelList
-        playlist={playlist}
-        onSelectChannel={handleSelectChannel}
-      />
+      {/* OTHER CHANNELS */}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold mb-3">
+          Other Channels
+        </h3>
+
+        <ChannelList
+          playlist={playlist}
+          search=""
+          onSelectChannel={setActiveChannel}
+        />
+      </div>
     </div>
   );
 };
