@@ -10,12 +10,7 @@ export default defineConfig({
   ],
 
 
-{
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
-},
-
+  
   server: {
     host: true,
     port: 5173
