@@ -14,21 +14,19 @@ const VideoPage = ({ playlist }) => {
     }
   }, []);
 
-  // Attempt fullscreen when a channel is selected
+  // Auto fullscreen on channel select (desktop & supported mobile)
   useEffect(() => {
     if (!currentChannel || !playerRef.current) return;
 
     const elem = playerRef.current.getInternalPlayer();
     if (elem.requestFullscreen) {
-      elem.requestFullscreen().catch(() => {
-        // Some mobile browsers block automatic fullscreen
-      });
+      elem.requestFullscreen().catch(() => {});
     } else if (elem.webkitRequestFullscreen) {
       elem.webkitRequestFullscreen();
     }
   }, [currentChannel]);
 
-  // Fullscreen button as fallback
+  // Fullscreen button fallback
   const handleFullScreen = () => {
     if (!playerRef.current) return;
     const elem = playerRef.current.getInternalPlayer();
@@ -62,13 +60,16 @@ const VideoPage = ({ playlist }) => {
       {/* Video player */}
       {currentChannel && (
         <div className="p-4">
-          <ReactPlayer
-            ref={playerRef}
-            url={currentChannel.url}
-            controls
-            width="100%"
-            height="200px"
-          />
+          <div className="relative w-full h-60 sm:h-96 md:h-[500px] lg:h-[600px] bg-black rounded">
+            <ReactPlayer
+              ref={playerRef}
+              url={currentChannel.url}
+              controls
+              width="100%"
+              height="100%"
+            />
+          </div>
+
           <button
             onClick={handleFullScreen}
             className="mt-2 p-2 bg-blue-500 text-white rounded w-full"
