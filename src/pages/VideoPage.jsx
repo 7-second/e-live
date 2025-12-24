@@ -5,12 +5,14 @@ import ReactPlayer from "react-player";
 const VideoPage = ({ playlist }) => {
   const [search, setSearch] = useState("");
   const [currentChannel, setCurrentChannel] = useState(null);
+  const [isTelegram, setIsTelegram] = useState(false);
   const playerRef = useRef(null);
   const playerContainerRef = useRef(null);
 
-  // Expand Telegram WebApp container
+  // Detect if running inside Telegram WebApp
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
+    if (typeof window !== "undefined" && window.Telegram?.WebApp) {
+      setIsTelegram(true);
       window.Telegram.WebApp.expand();
     }
   }, []);
@@ -56,10 +58,10 @@ const VideoPage = ({ playlist }) => {
           </div>
 
           {/* Telegram detection */}
-          {window.Telegram?.WebApp ? (
+          {isTelegram ? (
             <div className="mt-2 p-2 bg-gray-800 text-white rounded">
               ⚠️ Fullscreen is blocked inside Telegram. Copy the link below and open it in your browser or device video player:
-              <div className="mt-1 break-words text-blue-400">{currentChannel.url}</div>
+              <div className="mt-1  text-blue-400">{currentChannel.url}</div>
             </div>
           ) : (
             <a
