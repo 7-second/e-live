@@ -12,12 +12,12 @@ const bot = new TelegramBot(TOKEN, { polling: true });
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  bot.sendMessage(chatId, "Open IPTV inside Telegram:", {
+  bot.sendMessage(chatId, "Click down below to start watch all channels in telegram", {
     reply_markup: {
       inline_keyboard: [
         [
           {
-            text: "Open IPTV",
+            text: "Open E-live",
             web_app: { url: APP_URL },
           },
         ],
