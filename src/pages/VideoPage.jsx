@@ -14,7 +14,21 @@ const VideoPage = ({ playlist }) => {
     }
   }, []);
 
-  // Fullscreen handler
+  // Attempt fullscreen when a channel is selected
+  useEffect(() => {
+    if (!currentChannel || !playerRef.current) return;
+
+    const elem = playerRef.current.getInternalPlayer();
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen().catch(() => {
+        // Some mobile browsers block automatic fullscreen
+      });
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+  }, [currentChannel]);
+
+  // Fullscreen button as fallback
   const handleFullScreen = () => {
     if (!playerRef.current) return;
     const elem = playerRef.current.getInternalPlayer();
