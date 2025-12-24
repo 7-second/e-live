@@ -8,30 +8,19 @@ const VideoPage = ({ playlist }) => {
   const playerRef = useRef(null);
   const playerContainerRef = useRef(null);
 
-  // Expand Telegram WebApp
+  // Expand Telegram WebApp container
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.expand();
     }
   }, []);
 
-  // Scroll player into view on channel select
+  // Scroll player into view when a channel is selected
   useEffect(() => {
     if (currentChannel && playerContainerRef.current) {
       playerContainerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [currentChannel]);
-
-  // Fullscreen button fallback
-  const handleFullScreen = () => {
-    if (!playerRef.current) return;
-    const elem = playerRef.current.getInternalPlayer();
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen().catch(() => {});
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    }
-  };
 
   return (
     <div className="p-2">
@@ -66,12 +55,18 @@ const VideoPage = ({ playlist }) => {
             />
           </div>
 
-          <button
-            onClick={handleFullScreen}
-            className="mt-2 p-2 bg-blue-500 text-white rounded w-full"
+          {/* Telegram mobile workaround */}
+          <p className="text-gray-300 text-sm mt-2 mb-1">
+            Telegram blocks fullscreen in-app. Tap below to open in your phone's video player:
+          </p>
+          <a
+            href={currentChannel.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-blue-500 text-white rounded p-2"
           >
-            Fullscreen
-          </button>
+            Open in device video player
+          </a>
         </div>
       )}
     </div>
