@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
     "hls.js": "^1.6.15",
     "node-telegram-bot-api": "^0.67.0",
     "react": "^19.2.0",
