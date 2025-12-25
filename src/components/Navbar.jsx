@@ -64,7 +64,7 @@ const Navbar = ({ activeId, onSelect, onSearch }) => {
       {/* Nav items (Categories + NEW SPORTS LINK) */}
       <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-hide no-scrollbar items-center">
         
-        NEW SPORT NAVIGATION BUTTON
+        {/* NEW SPORT NAVIGATION BUTTON */}
         {/* <Link
           to="/sports"
           className={`flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all uppercase tracking-tighter
