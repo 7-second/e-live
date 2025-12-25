@@ -1,33 +1,20 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+const sendTelegramMessage = async (text) => {
+  const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+  const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+  const URL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
-  define: {
-    // This solves the "process is not defined" white screen error
-    'process.env': {},
-    'global': 'window',
-  },
-  build: {
-    // 1. Fixes the chunk size warning
-    chunkSizeWarningLimit: 1600, 
-    // 2. Splits libraries into their own files for better loading
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString();
-          }
-        },
-      },
-    },
-  },
-  server: {
-    host: true,
-    port: 5173
+  try {
+    await fetch(URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: text,
+        parse_mode: "HTML",
+      }),
+    });
+    console.log("Telegram message sent!");
+  } catch (error) {
+    console.error("Telegram Error:", error);
   }
-})
+};
