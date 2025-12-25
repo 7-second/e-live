@@ -2,31 +2,11 @@ import { meta } from "eslint-plugin-react-hooks";
 
 export const NAV_ITEMS = [
  
-
-
-
   {
     id: "world",
     name: "World TV",
     url: import.meta.env.VITE_WORLD_TV_URL,
   },
-
-
-  {
-    id: "world",
-    name: "World TV",
-    url: import.meta.env.VITE_WORLD_TV_URL,
-  },
-
-
-  {
-    id: "world",
-    name: "World TV",
-    url: import.meta.env.VITE_WORLD_TV_URL,
-  },
-
-
-
 
 {
     id: "documentary",
