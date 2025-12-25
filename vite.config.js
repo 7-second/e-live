@@ -1,20 +1,38 @@
-const sendTelegramMessage = async (text) => {
-  const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-  const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
-  const URL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
-  try {
-    await fetch(URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: text,
-        parse_mode: "HTML",
-      }),
-    });
-    console.log("Telegram message sent!");
-  } catch (error) {
-    console.error("Telegram Error:", error);
-  }
-};
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
+  define: {
+    // This stops the "process is not defined" error globally
+    'process.env': {},
+  },
+  build: {
+    // 1. Increases the limit to 2MB so the warning disappears
+    chunkSizeWarningLimit: 2000,
+    
+    // 2. Splitting logic: This moves heavy libraries into their own files
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            // Group HLS and React Player together
+            if (id.includes('hls.js') || id.includes('react-player')) {
+              return 'player-bundle';
+            }
+            // Group React core together
+            if (id.includes('react')) {
+              return 'react-core';
+            }
+            // Everything else in node_modules goes to 'vendor'
+            return 'vendor';
+          }
+        },
+      },
+    },
+  },
+})
