@@ -64,12 +64,12 @@ const Navbar = ({ activeId, onSelect, onSearch }) => {
       {/* Nav items (Categories + NEW SPORTS LINK) */}
       <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-hide no-scrollbar items-center">
         
-        {/* NEW SPORT NAVIGATION BUTTON */}
+        NEW SPORT NAVIGATION BUTTON
         {/* <Link
           to="/sports"
           className={`flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all uppercase tracking-tighter
             ${
-              location.pathname === "/sports"
+              /
                 ? "bg-green-600 text-white shadow-[0_0_15px_rgba(22,163,74,0.4)]"
                 : "bg-gray-800/60 hover:bg-gray-700 text-gray-400 hover:text-white"
             }
