@@ -7,10 +7,24 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  // This is the CRITICAL part for the white screen fix
   define: {
+    // This solves the "process is not defined" white screen error
     'process.env': {},
-    'global': {},
+    'global': 'window',
+  },
+  build: {
+    // 1. Fixes the chunk size warning
+    chunkSizeWarningLimit: 1600, 
+    // 2. Splits libraries into their own files for better loading
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
+        },
+      },
+    },
   },
   server: {
     host: true,
